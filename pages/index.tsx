@@ -5,9 +5,16 @@ export default function Home() {
   const { accounts, error: extensionError } = usePolkadotExtension()
 
   return (
-    <>
-      accounts: { JSON.stringify( accounts ) }
-      error: { extensionError && <p>{ extensionError.message }</p> }
-    </>
+    <div>
+      <pre>accounts: { JSON.stringify( accounts, null, 2 ) }</pre>
+      { extensionError && <p>{ extensionError.message }</p> }
+      <p>
+        <a 
+          href="https://github.com/niklasp/polkadot-extension-next-js-example"
+        >
+          -&gt; Github Repo &lt;-
+        </a>
+      </p>
+    </div>
   )
 }
