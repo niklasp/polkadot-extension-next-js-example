@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@polkadot/extension-dapp": "^0.45.5",
     "@polkadot/extension-inject": "^0.45.5",
     "@types/node": "18.15.13",
     "@types/react": "18.0.37",
