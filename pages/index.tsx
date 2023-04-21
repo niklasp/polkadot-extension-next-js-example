@@ -6,8 +6,8 @@ export default function Home() {
 
   return (
     <>
-      { JSON.stringify( accounts ) }
-      { extensionError && <p>{ extensionError.message }</p> }
+      accounts: { JSON.stringify( accounts ) }
+      error: { extensionError && <p>{ extensionError.message }</p> }
     </>
   )
 }
