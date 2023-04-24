@@ -38,14 +38,16 @@ export const checkEnabled: (extensionName: string) => Promise<checkEnabledReturn
   }
 
   export const usePolkadotExtension = (): UsePolkadotExtensionReturnType => {
-    const isMountedRef = useIsMounted();
-    const [ready, setReady] = useState(false);
-    const [accounts, setAccounts] = useState<InjectedAccountWithMeta[] | null>(null);
-    const [error, setError] = useState<Error | null>(null);
+    const isMounted = useIsMounted()
+    const [ready, setReady] = useState(false)
+    const [accounts, setAccounts] = useState<InjectedAccountWithMeta[] | null>(null)
+    const [error, setError] = useState<Error | null>(null)
   
     useEffect(() => {
         const maybeEnable = async () => {
-            if (isMountedRef.current) {
+            console.log( 'here at maybeEnable')
+            if (isMounted) {
+                console.log( 'here at ismounted check'  )
                 const enablePromise = checkEnabled('polkadot-extension')                
                 const enableResult = await enablePromise
                 const { accounts, error } = enableResult
