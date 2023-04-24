@@ -7,7 +7,7 @@ export default function Home() {
     <div>
       <h1>nextjs + polkadot extension demo</h1>
       <pre>accounts: {JSON.stringify(accounts, null, 2)}</pre>
-      {extensionError && <p>{extensionError.message}</p>}
+      {extensionError && <p className="error">{extensionError.message}</p>}
       <p>
         <a href="https://github.com/niklasp/polkadot-extension-next-js-example">
           -&gt; Github Repo &lt;-

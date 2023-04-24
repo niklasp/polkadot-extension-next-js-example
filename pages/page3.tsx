@@ -67,6 +67,7 @@ export default function Page3() {
           <p>{signature}</p>
         </>
       )}
+      {extensionError && <p className="error">{extensionError.message}</p>}
     </div>
   );
 }

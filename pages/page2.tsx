@@ -42,6 +42,7 @@ export default function Page2() {
           <p>{signature}</p>
         </>
       )}
+      {extensionError && <p className="error">{extensionError.message}</p>}
     </div>
   );
 }
