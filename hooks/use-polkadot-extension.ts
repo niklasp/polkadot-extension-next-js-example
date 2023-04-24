@@ -1,4 +1,4 @@
-import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
+import { InjectedAccountWithMeta, InjectedExtension } from '@polkadot/extension-inject/types';
 import { useEffect, useState } from 'react';
 import { useIsMounted } from './use-is-mounted';
 
@@ -31,23 +31,29 @@ export const checkEnabled: (extensionName: string) => Promise<checkEnabledReturn
     }
   };
 
-  interface UsePolkadotExtensionReturnType {
-    ready: boolean;
-    accounts: InjectedAccountWithMeta[] | null;
-    error: Error | null;
+  export interface UsePolkadotExtensionReturnType {
+    isReady: boolean
+    accounts: InjectedAccountWithMeta[] | null
+    error: Error | null
+    injector: InjectedExtension | null
+    actingAccount: InjectedAccountWithMeta | null
+    setActingAccountIdx: (idx: number) => void
   }
 
   export const usePolkadotExtension = (): UsePolkadotExtensionReturnType => {
     const isMounted = useIsMounted()
-    const [ready, setReady] = useState(false)
+    const [isReady, setIsReady] = useState(false)
     const [accounts, setAccounts] = useState<InjectedAccountWithMeta[] | null>(null)
+    const [actingAccountIdx, setActingAccountIdx] = useState<number>(0)
     const [error, setError] = useState<Error | null>(null)
+    const [injector, setInjector] = useState<InjectedExtension | null>(null)
+
+    const actingAccount = accounts && accounts[actingAccountIdx]
   
     useEffect(() => {
         const maybeEnable = async () => {
             console.log( 'here at maybeEnable')
             if (isMounted) {
-                console.log( 'here at ismounted check'  )
                 const enablePromise = checkEnabled('polkadot-extension')                
                 const enableResult = await enablePromise
                 const { accounts, error } = enableResult
@@ -59,6 +65,26 @@ export const checkEnabled: (extensionName: string) => Promise<checkEnabledReturn
 
         maybeEnable()
     }, []);
+
+    useEffect(() => {
+        if ( isMounted ) {
+          const getInjector = async() => {
+            const { web3FromSource } = await import( "@polkadot/extension-dapp" );
+            const actingAccount = accounts && actingAccountIdx !== undefined ? 
+                accounts[actingAccountIdx] : undefined
+            if ( actingAccount?.meta.source ) {
+                try {
+                    const injector = await web3FromSource(actingAccount?.meta.source);
+                    setInjector( injector )
+                } catch ( e : any) {
+                    setError( e )
+                }
+            }
+          }
+    
+          getInjector()
+        }
+      }, [actingAccountIdx, accounts] )
   
-    return { accounts, ready, error };
+    return { accounts, actingAccount, setActingAccountIdx, isReady, error, injector };
 }

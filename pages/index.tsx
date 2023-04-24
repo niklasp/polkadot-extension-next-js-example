@@ -1,21 +1,18 @@
-import { usePolkadotExtension } from "@/hooks/use-polkadot-extension"
+import { usePolkadotExtension } from "@/hooks/use-polkadot-extension";
 
 export default function Home() {
-
-  const { accounts, error: extensionError } = usePolkadotExtension()
+  const { accounts, error: extensionError, injector } = usePolkadotExtension();
 
   return (
     <div>
       <h1>nextjs + polkadot extension demo</h1>
-      <pre>accounts: { JSON.stringify( accounts, null, 2 ) }</pre>
-      { extensionError && <p>{ extensionError.message }</p> }
+      <pre>accounts: {JSON.stringify(accounts, null, 2)}</pre>
+      {extensionError && <p>{extensionError.message}</p>}
       <p>
-        <a 
-          href="https://github.com/niklasp/polkadot-extension-next-js-example"
-        >
+        <a href="https://github.com/niklasp/polkadot-extension-next-js-example">
           -&gt; Github Repo &lt;-
         </a>
       </p>
     </div>
-  )
+  );
 }

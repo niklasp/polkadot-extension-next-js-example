@@ -20,3 +20,9 @@ a {
 nav a {
   margin-right: 1rem;
 }
+
+input,
+select {
+  display: block;
+  margin: 1rem 0;
+}

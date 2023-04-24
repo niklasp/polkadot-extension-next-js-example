@@ -1,46 +1,42 @@
 // component that returns a context provider for the polkadot extension
 // this component is used in _app.tsx
-// 
+//
 // Path: context/polkadot-extension-context.tsx
-import { createContext, ReactNode, useContext, useEffect, useState } from "react"
-import { InjectedAccountWithMeta } from "@polkadot/extension-inject/types"
-import { usePolkadotExtension } from "@/hooks/use-polkadot-extension"
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
+import {
+  usePolkadotExtension,
+  UsePolkadotExtensionReturnType,
+} from "@/hooks/use-polkadot-extension";
 
-interface PolkadotExtensionContextProps {
-  accounts: InjectedAccountWithMeta[] | null
-  error: Error | null
-}
-
-const PolkadotExtensionContext = createContext<PolkadotExtensionContextProps>({
+const PolkadotExtensionContext = createContext<UsePolkadotExtensionReturnType>({
   accounts: [],
   error: null,
-})
+  isReady: false,
+  actingAccount: null,
+  injector: null,
+  setActingAccountIdx: () => {},
+});
 
-export const usePolkadotExtensionWithContext = () => useContext( PolkadotExtensionContext )
+export const usePolkadotExtensionWithContext = () =>
+  useContext(PolkadotExtensionContext);
 
-export const PolkadotExtensionContextProvider = ( { children }: { children: ReactNode } ) => {
-  const { accounts, error } = usePolkadotExtension()
+export const PolkadotExtensionContextProvider = ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
+  const polkadotExtension = usePolkadotExtension();
 
   return (
-    <PolkadotExtensionContext.Provider value={ { accounts, error } }>
-      { children }
+    <PolkadotExtensionContext.Provider value={polkadotExtension}>
+      {children}
     </PolkadotExtensionContext.Provider>
-  )
-}
-
-// component that returns a context provider for the polkadot extension
-// this component is used in _app.tsx
-// 
-// Path: context/polkadot-extension-context.tsx
-// import { createContext, ReactNode, useContext, useEffect, useState } from "react"
-// import { web3Accounts, web3Enable } from "@polkadot/extension-dapp"
-// import { InjectedAccountWithMeta } from "@polkadot/extension-inject/types"
-// 
-// interface PolkadotExtensionContextProps {
-//   accounts: InjectedAccountWithMeta[]
-//   error: Error | null
-// }
-// 
-// const PolkadotExtensionContext = createContext<PolkadotExtensionContextProps>({
-//   accounts: [],
-//
+  );
+};
