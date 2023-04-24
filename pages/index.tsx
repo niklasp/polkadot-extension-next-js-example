@@ -6,6 +6,7 @@ export default function Home() {
 
   return (
     <div>
+      <h1>nextjs + polkadot extension demo</h1>
       <pre>accounts: { JSON.stringify( accounts, null, 2 ) }</pre>
       { extensionError && <p>{ extensionError.message }</p> }
       <p>
