@@ -1,17 +1,14 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react';
 
-function useIsMounted() {
-  const isMounted = useRef(false)
+export const useIsMounted = (): { readonly current: boolean } => {
+  const isMountedRef = useRef<boolean>(false);
 
   useEffect(() => {
-    isMounted.current = true
-
+    isMountedRef.current = true;
     return () => {
-      isMounted.current = false
-    }
-  }, [])
+      isMountedRef.current = false;
+    };
+  }, []);
 
-  return useCallback(() => isMounted.current, [])
-}
-
-export { useIsMounted }
+  return isMountedRef;
+};
