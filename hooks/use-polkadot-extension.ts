@@ -10,6 +10,20 @@ interface checkEnabledReturnType {
   error: Error | null;
 }
 
+export const extensionSetup = async () => {
+  const extensionDapp = await import("@polkadot/extension-dapp");
+  const { web3Accounts, web3Enable } = extensionDapp;
+  const enabledApps = await web3Enable("polkadot-extension");
+  console.log("enabled Apps", enabledApps);
+  if (enabledApps.length === 0) {
+    console.log("no extension");
+    return;
+  }
+
+  const accounts = await web3Accounts();
+  return accounts;
+};
+
 export const checkEnabled: (
   extensionName: string
 ) => Promise<checkEnabledReturnType> = async (
@@ -62,42 +76,51 @@ export const usePolkadotExtension = (): UsePolkadotExtensionReturnType => {
   const actingAccount = accounts && accounts[actingAccountIdx];
 
   useEffect(() => {
-    const maybeEnable = async () => {
-      console.log("here at maybeEnable");
-      if (isMounted) {
-        const enablePromise = checkEnabled("polkadot-extension");
-        const enableResult = await enablePromise;
-        const { accounts, error } = enableResult;
-
-        setError(error);
-        setAccounts(accounts);
-      }
+    const setup = async () => {
+      const accounts = await extensionSetup();
+      setAccounts(accounts);
     };
 
-    maybeEnable();
-  }, []);
+    setup();
+  });
 
-  useEffect(() => {
-    if (isMounted) {
-      const getInjector = async () => {
-        const { web3FromSource } = await import("@polkadot/extension-dapp");
-        const actingAccount =
-          accounts && actingAccountIdx !== undefined
-            ? accounts[actingAccountIdx]
-            : undefined;
-        if (actingAccount?.meta.source) {
-          try {
-            const injector = await web3FromSource(actingAccount?.meta.source);
-            setInjector(injector);
-          } catch (e: any) {
-            setError(e);
-          }
-        }
-      };
+  // useEffect(() => {
+  //   const maybeEnable = async () => {
+  //     console.log("here at maybeEnable");
+  //     if (isMounted) {
+  //       const enablePromise = checkEnabled("polkadot-extension");
+  //       const enableResult = await enablePromise;
+  //       const { accounts, error } = enableResult;
 
-      getInjector();
-    }
-  }, [actingAccountIdx, accounts]);
+  //       setError(error);
+  //       setAccounts(accounts);
+  //     }
+  //   };
+
+  //   maybeEnable();
+  // }, []);
+
+  // useEffect(() => {
+  //   if (isMounted) {
+  //     const getInjector = async () => {
+  //       const { web3FromSource } = await import("@polkadot/extension-dapp");
+  //       const actingAccount =
+  //         accounts && actingAccountIdx !== undefined
+  //           ? accounts[actingAccountIdx]
+  //           : undefined;
+  //       if (actingAccount?.meta.source) {
+  //         try {
+  //           const injector = await web3FromSource(actingAccount?.meta.source);
+  //           setInjector(injector);
+  //         } catch (e: any) {
+  //           setError(e);
+  //         }
+  //       }
+  //     };
+
+  //     getInjector();
+  //   }
+  // }, [actingAccountIdx, accounts]);
 
   return {
     accounts,
