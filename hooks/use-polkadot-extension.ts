@@ -138,7 +138,7 @@ export const usePolkadotExtension = (): UsePolkadotExtensionReturnType => {
     if (!isReady) {
       setup();
     }
-  }, []);
+  }, [extensions, isReady]);
 
   // useEffect(() => {
   //   const maybeEnable = async () => {
