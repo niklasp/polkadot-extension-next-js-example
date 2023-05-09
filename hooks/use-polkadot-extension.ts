@@ -66,9 +66,9 @@ export interface UsePolkadotExtensionReturnType {
 export const usePolkadotExtension = (): UsePolkadotExtensionReturnType => {
   const isMounted = useIsMounted();
   const [isReady, setIsReady] = useState(false);
-  const [accounts, setAccounts] = useState<
-    InjectedAccountWithMeta[] | null | undefined
-  >(null);
+  const [accounts, setAccounts] = useState<InjectedAccountWithMeta[] | null>(
+    null
+  );
   const [actingAccountIdx, setActingAccountIdx] = useState<number>(0);
   const [error, setError] = useState<Error | null>(null);
   const [injector, setInjector] = useState<InjectedExtension | null>(null);
@@ -78,7 +78,7 @@ export const usePolkadotExtension = (): UsePolkadotExtensionReturnType => {
   useEffect(() => {
     const setup = async () => {
       const accounts = await extensionSetup();
-      setAccounts(accounts);
+      setAccounts(accounts || []);
     };
 
     setup();
