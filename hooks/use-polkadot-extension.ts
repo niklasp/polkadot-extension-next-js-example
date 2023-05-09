@@ -4,6 +4,7 @@ import {
 } from "@polkadot/extension-inject/types";
 import { useEffect, useState } from "react";
 import { useIsMounted } from "./use-is-mounted";
+import { documentReadyPromise } from "./utils";
 
 interface checkEnabledReturnType {
   accounts: InjectedAccountWithMeta[] | null;
@@ -76,12 +77,38 @@ export const usePolkadotExtension = (): UsePolkadotExtensionReturnType => {
   const actingAccount = accounts && accounts[actingAccountIdx];
 
   useEffect(() => {
+    console.log("will get injector because accounts changed to ", accounts);
+    if (isMounted) {
+      const getInjector = async () => {
+        const { web3FromSource } = await import("@polkadot/extension-dapp");
+        const actingAccount =
+          accounts && actingAccountIdx !== undefined
+            ? accounts[actingAccountIdx]
+            : undefined;
+        if (actingAccount?.meta.source) {
+          try {
+            const injector = await web3FromSource(actingAccount?.meta.source);
+            setInjector(injector);
+          } catch (e: any) {
+            setError(e);
+          }
+        }
+      };
+
+      getInjector();
+    }
+  }, [actingAccountIdx, accounts]);
+
+  useEffect(() => {
     const setup = async () => {
       const extensionDapp = await import("@polkadot/extension-dapp");
       const { web3AccountsSubscribe, web3Enable, web3Accounts } = extensionDapp;
       // const enabledApps = await web3Enable("polkadot-extension");
 
-      const injectedPromise = await web3Enable("polkadot-extension");
+      const injectedPromise = documentReadyPromise(() =>
+        web3Enable("polkadot-extension")
+      );
+      // const injectedPromise = await web3Enable("polkadot-extension");
       const extensions = await injectedPromise;
 
       setExtensions(extensions);
@@ -98,7 +125,7 @@ export const usePolkadotExtension = (): UsePolkadotExtensionReturnType => {
       } else {
         let unsubscribe: () => void;
 
-        // we subscribe to any account change and log the new list.
+        // we subscribe to any account change
         // note that `web3AccountsSubscribe` returns the function to unsubscribe
         unsubscribe = await web3AccountsSubscribe((injectedAccounts) => {
           setAccounts(injectedAccounts);
@@ -128,28 +155,6 @@ export const usePolkadotExtension = (): UsePolkadotExtensionReturnType => {
 
   //   maybeEnable();
   // }, []);
-
-  // useEffect(() => {
-  //   if (isMounted) {
-  //     const getInjector = async () => {
-  //       const { web3FromSource } = await import("@polkadot/extension-dapp");
-  //       const actingAccount =
-  //         accounts && actingAccountIdx !== undefined
-  //           ? accounts[actingAccountIdx]
-  //           : undefined;
-  //       if (actingAccount?.meta.source) {
-  //         try {
-  //           const injector = await web3FromSource(actingAccount?.meta.source);
-  //           setInjector(injector);
-  //         } catch (e: any) {
-  //           setError(e);
-  //         }
-  //       }
-  //     };
-
-  //     getInjector();
-  //   }
-  // }, [actingAccountIdx, accounts]);
 
   return {
     accounts,
