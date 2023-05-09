@@ -91,7 +91,7 @@ export const usePolkadotExtension = (): UsePolkadotExtensionReturnType => {
         return;
       }
 
-      const accounts = await web3Accounts();
+      // const accounts = await web3Accounts();
 
       if (accounts) {
         setIsReady(true);
