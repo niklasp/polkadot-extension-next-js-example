@@ -66,6 +66,9 @@ export const usePolkadotExtension = (): UsePolkadotExtensionReturnType => {
   const [accounts, setAccounts] = useState<InjectedAccountWithMeta[] | null>(
     null
   );
+  const [extensions, setExtensions] = useState<InjectedExtension[] | null>(
+    null
+  );
   const [actingAccountIdx, setActingAccountIdx] = useState<number>(0);
   const [error, setError] = useState<Error | null>(null);
   const [injector, setInjector] = useState<InjectedExtension | null>(null);
@@ -75,12 +78,20 @@ export const usePolkadotExtension = (): UsePolkadotExtensionReturnType => {
   useEffect(() => {
     const setup = async () => {
       const extensionDapp = await import("@polkadot/extension-dapp");
-      const { web3AccountsSubscribe, web3Enable } = extensionDapp;
-      const enabledApps = await web3Enable("polkadot-extension");
-      if (enabledApps.length === 0) {
+      const { web3AccountsSubscribe, web3Enable, web3Accounts } = extensionDapp;
+      // const enabledApps = await web3Enable("polkadot-extension");
+
+      const injectedPromise = await web3Enable("polkadot-extension");
+      const extensions = await injectedPromise;
+
+      setExtensions(extensions);
+
+      if (extensions.length === 0) {
         console.log("no extension");
         return;
       }
+
+      const accounts = await web3Accounts();
 
       if (accounts) {
         setIsReady(true);
