@@ -25,6 +25,7 @@ export const checkEnabled: (
 
     if (w3Enabled) {
       accounts = await web3Accounts();
+      console.log("accounts", accounts);
       return { accounts, error: null };
     }
 
