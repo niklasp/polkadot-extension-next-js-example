@@ -78,10 +78,16 @@ export const usePolkadotExtension = (): UsePolkadotExtensionReturnType => {
   useEffect(() => {
     const setup = async () => {
       const accounts = await extensionSetup();
-      setAccounts(accounts || []);
+
+      if (accounts) {
+        setAccounts(accounts);
+        setIsReady(true);
+      }
     };
 
-    setup();
+    if (!isReady) {
+      setup();
+    }
   }, []);
 
   // useEffect(() => {
