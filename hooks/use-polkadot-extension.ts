@@ -12,16 +12,13 @@ interface checkEnabledReturnType {
 
 export const extensionSetup = async () => {
   const extensionDapp = await import("@polkadot/extension-dapp");
-  const { web3Accounts, web3Enable } = extensionDapp;
+  const { web3Accounts, web3Enable, web3AccountsSubscribe } = extensionDapp;
   const enabledApps = await web3Enable("polkadot-extension");
   console.log("enabled Apps", enabledApps);
   if (enabledApps.length === 0) {
     console.log("no extension");
     return;
   }
-
-  const accounts = await web3Accounts();
-  return accounts;
 };
 
 export const checkEnabled: (
@@ -77,11 +74,26 @@ export const usePolkadotExtension = (): UsePolkadotExtensionReturnType => {
 
   useEffect(() => {
     const setup = async () => {
-      const accounts = await extensionSetup();
+      const extensionDapp = await import("@polkadot/extension-dapp");
+      const { web3AccountsSubscribe, web3Enable } = extensionDapp;
+      const enabledApps = await web3Enable("polkadot-extension");
+      if (enabledApps.length === 0) {
+        console.log("no extension");
+        return;
+      }
 
       if (accounts) {
-        setAccounts(accounts);
         setIsReady(true);
+      } else {
+        let unsubscribe: () => void;
+
+        // we subscribe to any account change and log the new list.
+        // note that `web3AccountsSubscribe` returns the function to unsubscribe
+        unsubscribe = await web3AccountsSubscribe((injectedAccounts) => {
+          setAccounts(injectedAccounts);
+        });
+
+        return () => unsubscribe && unsubscribe();
       }
     };
 
