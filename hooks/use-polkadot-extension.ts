@@ -82,7 +82,7 @@ export const usePolkadotExtension = (): UsePolkadotExtensionReturnType => {
     };
 
     setup();
-  });
+  }, []);
 
   // useEffect(() => {
   //   const maybeEnable = async () => {
