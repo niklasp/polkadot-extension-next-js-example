@@ -77,29 +77,6 @@ export const usePolkadotExtension = (): UsePolkadotExtensionReturnType => {
   const actingAccount = accounts && accounts[actingAccountIdx];
 
   useEffect(() => {
-    console.log("will get injector because accounts changed to ", accounts);
-    if (isMounted) {
-      const getInjector = async () => {
-        const { web3FromSource } = await import("@polkadot/extension-dapp");
-        const actingAccount =
-          accounts && actingAccountIdx !== undefined
-            ? accounts[actingAccountIdx]
-            : undefined;
-        if (actingAccount?.meta.source) {
-          try {
-            const injector = await web3FromSource(actingAccount?.meta.source);
-            setInjector(injector);
-          } catch (e: any) {
-            setError(e);
-          }
-        }
-      };
-
-      getInjector();
-    }
-  }, [actingAccountIdx, accounts]);
-
-  useEffect(() => {
     const setup = async () => {
       const extensionDapp = await import("@polkadot/extension-dapp");
       const { web3AccountsSubscribe, web3Enable, web3Accounts } = extensionDapp;
@@ -140,21 +117,25 @@ export const usePolkadotExtension = (): UsePolkadotExtensionReturnType => {
     }
   }, [extensions, isReady]);
 
-  // useEffect(() => {
-  //   const maybeEnable = async () => {
-  //     console.log("here at maybeEnable");
-  //     if (isMounted) {
-  //       const enablePromise = checkEnabled("polkadot-extension");
-  //       const enableResult = await enablePromise;
-  //       const { accounts, error } = enableResult;
+  useEffect(() => {
+    const getInjector = async () => {
+      const { web3FromSource } = await import("@polkadot/extension-dapp");
+      const actingAccount =
+        accounts && actingAccountIdx !== undefined
+          ? accounts[actingAccountIdx]
+          : undefined;
+      if (actingAccount?.meta.source) {
+        try {
+          const injector = await web3FromSource(actingAccount?.meta.source);
+          setInjector(injector);
+        } catch (e: any) {
+          setError(e);
+        }
+      }
+    };
 
-  //       setError(error);
-  //       setAccounts(accounts);
-  //     }
-  //   };
-
-  //   maybeEnable();
-  // }, []);
+    getInjector();
+  }, [actingAccountIdx, accounts]);
 
   return {
     accounts,
